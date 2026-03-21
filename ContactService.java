@@ -1,8 +1,9 @@
 package com.cs320.projectone;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
 
 /**
  * Vanessa Sanchez
@@ -10,64 +11,100 @@ import java.util.Map;
  * ContactService.java
  *
  * Service class for managing Contact objects.
- * Supports adding, updating, and deleting contacts by their unique ID.
- * Uses in-memory data storage with validation handled by the Contact class.
+ * Supports adding, updating, deleting, and retrieving contacts
+ * by their unique ID using in-memory storage.
  */
-
 public class ContactService {
 
-    // this map stores all contacts using contactId as the key
-    private Map<String, Contact> contacts = new HashMap<>();
+    private final Map<String, Contact> contacts = new HashMap<>();
 
-    // method to add a new contact
+    /**
+     * Adds a new contact to the service.
+     *
+     * @param contact the contact to add
+     */
     public void addContact(Contact contact) {
-        // check if the contact ID is already used
-        if (contacts.containsKey(contact.getContactId())) {
+        if (contact == null) {
+            throw new IllegalArgumentException("Contact cannot be null");
+        }
+
+        String contactId = contact.getContactId();
+        validateContactId(contactId);
+
+        if (contacts.containsKey(contactId)) {
             throw new IllegalArgumentException("Contact ID already exists");
         }
-        // add the contact to the map
-        contacts.put(contact.getContactId(), contact);
+
+        contacts.put(contactId, contact);
     }
 
-    // method to delete a contact by ID
+    /**
+     * Deletes a contact by ID.
+     *
+     * @param contactId unique contact ID
+     */
     public void deleteContact(String contactId) {
-        // check if contact exists
+        validateContactId(contactId);
+
         if (!contacts.containsKey(contactId)) {
             throw new IllegalArgumentException("Contact ID not found");
         }
-        // remove contact
+
         contacts.remove(contactId);
     }
 
-    // method to update first name by contact ID
     public void updateFirstName(String contactId, String newFirstName) {
-        Contact contact = getContact(contactId); // get contact or throw error
-        contact.setFirstName(newFirstName); // use setter from Contact class
+        Contact contact = getContact(contactId);
+        contact.setFirstName(newFirstName);
     }
 
-    // method to update last name by contact ID
     public void updateLastName(String contactId, String newLastName) {
         Contact contact = getContact(contactId);
         contact.setLastName(newLastName);
     }
 
-    // method to update phone number by contact ID
     public void updatePhone(String contactId, String newPhone) {
         Contact contact = getContact(contactId);
         contact.setPhone(newPhone);
     }
 
-    // method to update address by contact ID
     public void updateAddress(String contactId, String newAddress) {
         Contact contact = getContact(contactId);
         contact.setAddress(newAddress);
     }
 
-    // private helper method to get contact or throw error if not found
+    /**
+     * Returns a contact by ID.
+     *
+     * @param contactId unique contact ID
+     * @return matching Contact
+     */
+    public Contact findContactById(String contactId) {
+        return getContact(contactId);
+    }
+
+    /**
+     * Returns all contacts currently stored in the service.
+     *
+     * @return list of contacts
+     */
+    public List<Contact> getAllContacts() {
+        return new ArrayList<>(contacts.values());
+    }
+
     private Contact getContact(String contactId) {
+        validateContactId(contactId);
+
         if (!contacts.containsKey(contactId)) {
             throw new IllegalArgumentException("Contact not found");
         }
+
         return contacts.get(contactId);
+    }
+
+    private void validateContactId(String contactId) {
+        if (contactId == null || contactId.isBlank()) {
+            throw new IllegalArgumentException("Contact ID cannot be null or blank");
+        }
     }
 }
