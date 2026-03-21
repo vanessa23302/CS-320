@@ -9,75 +9,92 @@ import org.junit.jupiter.api.Test;
  * ContactTest.java
  *
  * Unit tests for the Contact class.
- * Verifies correct creation of Contact objects and validation of field constraints.
+ * Verifies valid object creation, field constraints, and setter behavior.
  */
-
 public class ContactTest {
 
     @Test
     void testValidContactCreation() {
-        Contact contact = new Contact("101", "Lena", "Walker", "2223334444", "100 Sunset Dr");
-        assertEquals("101", contact.getContactId());
-        assertEquals("Lena", contact.getFirstName());
-        assertEquals("Walker", contact.getLastName());
-        assertEquals("2223334444", contact.getPhone());
-        assertEquals("100 Sunset Dr", contact.getAddress());
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+
+        assertEquals("123", contact.getContactId());
+        assertEquals("John", contact.getFirstName());
+        assertEquals("Doe", contact.getLastName());
+        assertEquals("1234567890", contact.getPhone());
+        assertEquals("123 Main St", contact.getAddress());
     }
 
     @Test
-    void testNullContactIdThrowsException() {
+    void testInvalidContactIdTooLong() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact(null, "Lena", "Walker", "2223334444", "100 Sunset Dr");
+            new Contact("12345678901", "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testLongContactIdThrowsException() {
+    void testNullContactId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("12345678901", "Lena", "Walker", "2223334444", "100 Sunset Dr");
+            new Contact(null, "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testNullFirstNameThrowsException() {
+    void testBlankContactId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("101", null, "Walker", "2223334444", "100 Sunset Dr");
+            new Contact("   ", "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testLongFirstNameThrowsException() {
+    void testInvalidFirstNameTooLong() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("101", "Alexandrianna", "Walker", "2223334444", "100 Sunset Dr");
+            new Contact("123", "LongFirstName", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testInvalidPhoneThrowsException() {
+    void testInvalidLastNameTooLong() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("101", "Lena", "Walker", "22233", "100 Sunset Dr");
+            new Contact("123", "John", "LongLastName", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testLongAddressThrowsException() {
+    void testInvalidPhoneNumber() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("101", "Lena", "Walker", "2223334444", "5678 Extra Long Boulevard Name Way");
+            new Contact("123", "John", "Doe", "12345", "123 Main St");
         });
     }
 
     @Test
-    void testSettersWorkCorrectly() {
-        Contact contact = new Contact("102", "Noah", "Green", "3334445555", "12 Hilltop Ln");
+    void testInvalidAddressTooLong() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Contact("123", "John", "Doe", "1234567890", "1234567890123456789012345678901");
+        });
+    }
 
-        contact.setFirstName("Eli");
-        contact.setLastName("Bryant");
-        contact.setPhone("8889990000");
-        contact.setAddress("64 Cypress Creek Rd");
+    @Test
+    void testSettersUpdateValues() {
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
 
-        assertEquals("Eli", contact.getFirstName());
-        assertEquals("Bryant", contact.getLastName());
-        assertEquals("8889990000", contact.getPhone());
-        assertEquals("64 Cypress Creek Rd", contact.getAddress());
+        contact.setFirstName("Jane");
+        contact.setLastName("Smith");
+        contact.setPhone("0987654321");
+        contact.setAddress("456 Oak Ave");
+
+        assertEquals("Jane", contact.getFirstName());
+        assertEquals("Smith", contact.getLastName());
+        assertEquals("0987654321", contact.getPhone());
+        assertEquals("456 Oak Ave", contact.getAddress());
+    }
+
+    @Test
+    void testSettersInvalidValues() {
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+
+        assertThrows(IllegalArgumentException.class, () -> contact.setFirstName(null));
+        assertThrows(IllegalArgumentException.class, () -> contact.setLastName(null));
+        assertThrows(IllegalArgumentException.class, () -> contact.setPhone("123"));
+        assertThrows(IllegalArgumentException.class, () -> contact.setAddress(null));
     }
 }
