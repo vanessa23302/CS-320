@@ -1,88 +1,100 @@
 package com.cs320.projectone;
 
 import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Vanessa Sanchez
  * CS 320 - Software Testing Automation & QA
- * ContactServiceTest.java
+ * ContactTest.java
  *
- * Unit tests for the ContactService class.
- * Verifies adding, deleting, and updating contact records with valid and invalid inputs.
+ * Unit tests for the Contact class.
+ * Verifies valid object creation, field constraints, and setter behavior.
  */
+public class ContactTest {
 
-public class ContactServiceTest {
+    @Test
+    void testValidContactCreation() {
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
 
-    private ContactService service;
-    private Contact contact;
-
-    @BeforeEach
-    void setUp() {
-        service = new ContactService();
-        contact = new Contact("101", "Lena", "Walker", "2223334444", "100 Sunset Dr");
-        service.addContact(contact);
+        assertEquals("123", contact.getContactId());
+        assertEquals("John", contact.getFirstName());
+        assertEquals("Doe", contact.getLastName());
+        assertEquals("1234567890", contact.getPhone());
+        assertEquals("123 Main St", contact.getAddress());
     }
 
     @Test
-    void testAddContact() {
-        Contact newContact = new Contact("102", "Marcus", "Stone", "9998887777", "42 Riverbend Rd");
-        service.addContact(newContact);
-        assertEquals("Marcus", newContact.getFirstName());
-    }
-
-    @Test
-    void testAddDuplicateContactThrowsException() {
-        Contact duplicate = new Contact("101", "Sophie", "Nguyen", "1231231234", "303 Ocean View Ln");
+    void testInvalidContactIdTooLong() {
         assertThrows(IllegalArgumentException.class, () -> {
-            service.addContact(duplicate);
+            new Contact("12345678901", "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testDeleteContact() {
-        service.deleteContact("101");
+    void testNullContactId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            service.deleteContact("101");
+            new Contact(null, "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testDeleteNonExistentContactThrowsException() {
+    void testBlankContactId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            service.deleteContact("999");
+            new Contact("   ", "John", "Doe", "1234567890", "123 Main St");
         });
     }
 
     @Test
-    void testUpdateFirstName() {
-        service.updateFirstName("101", "Tina");
-        assertEquals("Tina", contact.getFirstName());
-    }
-
-    @Test
-    void testUpdateLastName() {
-        service.updateLastName("101", "Lopez");
-        assertEquals("Lopez", contact.getLastName());
-    }
-
-    @Test
-    void testUpdatePhone() {
-        service.updatePhone("101", "7776665555");
-        assertEquals("7776665555", contact.getPhone());
-    }
-
-    @Test
-    void testUpdateAddress() {
-        service.updateAddress("101", "77 Maplewood Ave");
-        assertEquals("77 Maplewood Ave", contact.getAddress());
-    }
-
-    @Test
-    void testUpdateNonExistentContactThrowsException() {
+    void testInvalidFirstNameTooLong() {
         assertThrows(IllegalArgumentException.class, () -> {
-            service.updateFirstName("404", "Ghost");
+            new Contact("123", "LongFirstName", "Doe", "1234567890", "123 Main St");
         });
+    }
+
+    @Test
+    void testInvalidLastNameTooLong() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Contact("123", "John", "LongLastName", "1234567890", "123 Main St");
+        });
+    }
+
+    @Test
+    void testInvalidPhoneNumber() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Contact("123", "John", "Doe", "12345", "123 Main St");
+        });
+    }
+
+    @Test
+    void testInvalidAddressTooLong() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new Contact("123", "John", "Doe", "1234567890", "1234567890123456789012345678901");
+        });
+    }
+
+    @Test
+    void testSettersUpdateValues() {
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+
+        contact.setFirstName("Jane");
+        contact.setLastName("Smith");
+        contact.setPhone("0987654321");
+        contact.setAddress("456 Oak Ave");
+
+        assertEquals("Jane", contact.getFirstName());
+        assertEquals("Smith", contact.getLastName());
+        assertEquals("0987654321", contact.getPhone());
+        assertEquals("456 Oak Ave", contact.getAddress());
+    }
+
+    @Test
+    void testSettersInvalidValues() {
+        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+
+        assertThrows(IllegalArgumentException.class, () -> contact.setFirstName(null));
+        assertThrows(IllegalArgumentException.class, () -> contact.setLastName(null));
+        assertThrows(IllegalArgumentException.class, () -> contact.setPhone("123"));
+        assertThrows(IllegalArgumentException.class, () -> contact.setAddress(null));
     }
 }
