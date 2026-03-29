@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class ContactService {
 
+    // HashMap used for efficient contact storage and lookup
     private final Map<String, Contact> contacts = new HashMap<>();
 
     /**
@@ -53,21 +54,33 @@ public class ContactService {
         contacts.remove(contactId);
     }
 
+    /**
+     * Updates the first name of a contact.
+     */
     public void updateFirstName(String contactId, String newFirstName) {
         Contact contact = getContact(contactId);
         contact.setFirstName(newFirstName);
     }
 
+    /**
+     * Updates the last name of a contact.
+     */
     public void updateLastName(String contactId, String newLastName) {
         Contact contact = getContact(contactId);
         contact.setLastName(newLastName);
     }
 
+    /**
+     * Updates the phone number of a contact.
+     */
     public void updatePhone(String contactId, String newPhone) {
         Contact contact = getContact(contactId);
         contact.setPhone(newPhone);
     }
 
+    /**
+     * Updates the address of a contact.
+     */
     public void updateAddress(String contactId, String newAddress) {
         Contact contact = getContact(contactId);
         contact.setAddress(newAddress);
@@ -92,6 +105,18 @@ public class ContactService {
         return new ArrayList<>(contacts.values());
     }
 
+    /**
+     * Returns the number of contacts stored in the service.
+     *
+     * @return total number of contacts
+     */
+    public int getContactCount() {
+        return contacts.size();
+    }
+
+    /**
+     * Helper method to retrieve a contact by ID.
+     */
     private Contact getContact(String contactId) {
         validateContactId(contactId);
 
@@ -102,6 +127,9 @@ public class ContactService {
         return contacts.get(contactId);
     }
 
+    /**
+     * Validates the contact ID.
+     */
     private void validateContactId(String contactId) {
         if (contactId == null || contactId.isBlank()) {
             throw new IllegalArgumentException("Contact ID cannot be null or blank");
