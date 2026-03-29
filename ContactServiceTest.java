@@ -1,100 +1,149 @@
 package com.cs320.projectone;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  * Vanessa Sanchez
  * CS 320 - Software Testing Automation & QA
- * ContactTest.java
+ * CS 499 Capstone Enhancement
+ * ContactServiceTest.java
  *
- * Unit tests for the Contact class.
- * Verifies valid object creation, field constraints, and setter behavior.
+ * Unit tests for the ContactService class.
+ * Verifies adding, deleting, updating, retrieving, and counting contacts
+ * using the HashMap data structure.
  */
-public class ContactTest {
+public class ContactServiceTest {
 
-    @Test
-    void testValidContactCreation() {
-        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+    private ContactService service;
+    private Contact contact1;
+    private Contact contact2;
 
-        assertEquals("123", contact.getContactId());
-        assertEquals("John", contact.getFirstName());
-        assertEquals("Doe", contact.getLastName());
-        assertEquals("1234567890", contact.getPhone());
-        assertEquals("123 Main St", contact.getAddress());
+    @BeforeEach
+    void setUp() {
+        service = new ContactService();
+        contact1 = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+        contact2 = new Contact("456", "Jane", "Smith", "0987654321", "456 Oak Ave");
     }
 
     @Test
-    void testInvalidContactIdTooLong() {
+    void testAddContact() {
+        service.addContact(contact1);
+        assertEquals(contact1, service.findContactById("123"));
+    }
+
+    @Test
+    void testAddDuplicateContactId() {
+        service.addContact(contact1);
+
+        Contact duplicate = new Contact("123", "Jake", "Brown", "1112223333", "789 Pine Rd");
+
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("12345678901", "John", "Doe", "1234567890", "123 Main St");
+            service.addContact(duplicate);
         });
     }
 
     @Test
-    void testNullContactId() {
+    void testAddNullContact() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact(null, "John", "Doe", "1234567890", "123 Main St");
+            service.addContact(null);
         });
     }
 
     @Test
-    void testBlankContactId() {
+    void testDeleteContact() {
+        service.addContact(contact1);
+        service.deleteContact("123");
+
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("   ", "John", "Doe", "1234567890", "123 Main St");
+            service.findContactById("123");
         });
     }
 
     @Test
-    void testInvalidFirstNameTooLong() {
+    void testDeleteNonexistentContact() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("123", "LongFirstName", "Doe", "1234567890", "123 Main St");
+            service.deleteContact("999");
         });
     }
 
     @Test
-    void testInvalidLastNameTooLong() {
+    void testUpdateFirstName() {
+        service.addContact(contact1);
+        service.updateFirstName("123", "Jane");
+        assertEquals("Jane", service.findContactById("123").getFirstName());
+    }
+
+    @Test
+    void testUpdateLastName() {
+        service.addContact(contact1);
+        service.updateLastName("123", "Smith");
+        assertEquals("Smith", service.findContactById("123").getLastName());
+    }
+
+    @Test
+    void testUpdatePhone() {
+        service.addContact(contact1);
+        service.updatePhone("123", "0987654321");
+        assertEquals("0987654321", service.findContactById("123").getPhone());
+    }
+
+    @Test
+    void testUpdateAddress() {
+        service.addContact(contact1);
+        service.updateAddress("123", "456 Oak Ave");
+        assertEquals("456 Oak Ave", service.findContactById("123").getAddress());
+    }
+
+    @Test
+    void testFindContactById() {
+        service.addContact(contact1);
+        Contact found = service.findContactById("123");
+
+        assertEquals("John", found.getFirstName());
+        assertEquals("Doe", found.getLastName());
+    }
+
+    @Test
+    void testFindContactByInvalidId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("123", "John", "LongLastName", "1234567890", "123 Main St");
+            service.findContactById("999");
         });
     }
 
     @Test
-    void testInvalidPhoneNumber() {
+    void testFindContactByBlankId() {
         assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("123", "John", "Doe", "12345", "123 Main St");
+            service.findContactById("   ");
         });
     }
 
     @Test
-    void testInvalidAddressTooLong() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Contact("123", "John", "Doe", "1234567890", "1234567890123456789012345678901");
-        });
+    void testGetAllContacts() {
+        service.addContact(contact1);
+        service.addContact(contact2);
+
+        List<Contact> contacts = service.getAllContacts();
+
+        assertEquals(2, contacts.size());
+        assertTrue(contacts.contains(contact1));
+        assertTrue(contacts.contains(contact2));
     }
 
     @Test
-    void testSettersUpdateValues() {
-        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
+    void testGetContactCount() {
+        service.addContact(contact1);
+        service.addContact(contact2);
 
-        contact.setFirstName("Jane");
-        contact.setLastName("Smith");
-        contact.setPhone("0987654321");
-        contact.setAddress("456 Oak Ave");
-
-        assertEquals("Jane", contact.getFirstName());
-        assertEquals("Smith", contact.getLastName());
-        assertEquals("0987654321", contact.getPhone());
-        assertEquals("456 Oak Ave", contact.getAddress());
+        assertEquals(2, service.getContactCount());
     }
 
     @Test
-    void testSettersInvalidValues() {
-        Contact contact = new Contact("123", "John", "Doe", "1234567890", "123 Main St");
-
-        assertThrows(IllegalArgumentException.class, () -> contact.setFirstName(null));
-        assertThrows(IllegalArgumentException.class, () -> contact.setLastName(null));
-        assertThrows(IllegalArgumentException.class, () -> contact.setPhone("123"));
-        assertThrows(IllegalArgumentException.class, () -> contact.setAddress(null));
+    void testGetContactCountEmpty() {
+        assertEquals(0, service.getContactCount());
     }
 }
